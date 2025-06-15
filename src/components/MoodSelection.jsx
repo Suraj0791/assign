@@ -5,6 +5,7 @@ import BackButton from "./BackButton";
 
 const MoodSelection = ({
   selectedMood,
+  selectedMoods,
   onMoodSelect,
   onNext,
   onBack,
@@ -73,7 +74,7 @@ const MoodSelection = ({
             whileTap={{ scale: 0.96 }}
             onClick={() => onMoodSelect(mood.id)}
             className={`p-4 sm:p-6 rounded-2xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 ${
-              selectedMood === mood.id
+              selectedMoods && selectedMoods.includes(mood.id)
                 ? `${
                     mood.color
                   } text-white shadow-lg ring-2 ring-offset-2 ring-opacity-50 ring-${
@@ -81,13 +82,17 @@ const MoodSelection = ({
                   }-400`
                 : "bg-white border-2 border-gray-200 hover:border-gray-300"
             }`}
-            aria-pressed={selectedMood === mood.id}
+            aria-pressed={selectedMoods && selectedMoods.includes(mood.id)}
             aria-label={mood.label}
             tabIndex={0}
           >
             <motion.div
               className="text-3xl sm:text-4xl lg:text-5xl mb-2"
-              animate={selectedMood === mood.id ? { scale: [1, 1.2, 1] } : {}}
+              animate={
+                selectedMoods && selectedMoods.includes(mood.id)
+                  ? { scale: [1, 1.2, 1] }
+                  : {}
+              }
               transition={{ duration: 0.3 }}
             >
               {mood.emoji}
