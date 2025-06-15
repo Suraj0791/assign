@@ -54,7 +54,11 @@ const Reason = ({
     <div className="text-center space-y-8 relative">
       <BackButton onClick={onBack} />
       <div className="flex items-center justify-between mb-8">
-        <button className="text-gray-600 hover:text-gray-800" onClick={onSkip}>
+        <button
+          className="text-gray-600 hover:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 rounded-full px-4 py-2"
+          onClick={onSkip}
+          aria-label="Skip to next step"
+        >
           Skip
         </button>
       </div>

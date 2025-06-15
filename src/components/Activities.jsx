@@ -8,6 +8,7 @@ const Activities = ({
   selectedMood,
   onNext,
   onBack,
+  onSkip,
 }) => {
   const moods = [
     { id: "angry", label: "Angry", emoji: "😠", color: "bg-red-500" },
@@ -52,23 +53,39 @@ const Activities = ({
   const moodData = moods.find((m) => m.id === selectedMood) || moods[0];
 
   return (
-    <div className="text-center space-y-8 relative">
+    <div className="text-center space-y-8 relative pt-16 pb-16">
       <BackButton onClick={onBack} />
-      <h2 className="text-3xl font-bold text-gray-800 mb-4">
+      <button
+        className="absolute top-6 right-6 text-gray-600 hover:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 rounded-full px-4 py-2"
+        onClick={onSkip}
+        aria-label="Skip to next step"
+      >
+        Skip
+      </button>
+      <h2 className="text-3xl font-bold text-gray-800 mb-4 mt-2">
         What did you do today?
       </h2>
       <p className="text-gray-600 text-lg mb-8">Choose upto 5 activities</p>
 
-      <div className="grid grid-cols-3 md:grid-cols-5 gap-3 max-w-4xl mx-auto mb-8">
+      <div className="grid grid-cols-3 md:grid-cols-5 gap-4 max-w-4xl mx-auto mb-8">
         {activities.map((activity) => (
           <button
             key={activity}
             onClick={() => onActivityToggle(activity)}
-            className={`px-4 py-3 rounded-full border-2 transition-all duration-200 text-sm ${
+            className={`px-4 py-3 rounded-full border-2 transition-all duration-200 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 ${
               selectedActivities.includes(activity)
                 ? "bg-green-500 text-white border-green-500"
                 : "bg-white border-gray-300 hover:border-gray-400"
             }`}
+            aria-pressed={selectedActivities.includes(activity)}
+            aria-label={activity}
+            tabIndex={0}
+            style={{ transition: "transform 0.15s" }}
+            onMouseDown={(e) =>
+              (e.currentTarget.style.transform = "scale(0.96)")
+            }
+            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             {activity}
           </button>

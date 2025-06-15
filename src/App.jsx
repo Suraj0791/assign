@@ -25,6 +25,7 @@ const MemoizedComplete = memo(Complete);
 const MoodCheckinApp = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedMood, setSelectedMood] = useState("");
+  const [selectedMoods, setSelectedMoods] = useState([]);
   const [moodIntensity, setMoodIntensity] = useState(50);
   const [selectedStages, setSelectedStages] = useState([]);
   const [reasonText, setReasonText] = useState("");
@@ -129,6 +130,7 @@ const MoodCheckinApp = () => {
     setCurrentStep(0);
     setIsComplete(false);
     setSelectedMood("");
+    setSelectedMoods([]);
     setSelectedStages([]);
     setReasonText("");
     setSelectedActivities([]);
@@ -143,126 +145,146 @@ const MoodCheckinApp = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4">
         <div className="w-full max-w-4xl">
-          <MemoizedComplete
-            onReset={handleReset}
-            apiResponse={apiResponse}
-            error={error}
-          />
+          <div className="glass-card mx-auto">
+            <MemoizedComplete
+              onReset={handleReset}
+              apiResponse={apiResponse}
+              error={error}
+            />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4">
+    <div
+      className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4"
+      style={{ fontFamily: "Montserrat, sans-serif" }}
+    >
       <div className="w-full max-w-4xl">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial="initial"
-            animate="in"
-            exit="out"
-            variants={pageVariants}
-            transition={pageTransition}
-            className="w-full"
-          >
-            {currentStep === 0 && <MemoizedInstructions onNext={handleNext} />}
-            {currentStep === 1 && (
-              <MemoizedMoodSelection
-                selectedMood={selectedMood}
-                onMoodSelect={setSelectedMood}
-                onNext={handleNext}
-              />
-            )}
-            {currentStep === 2 && (
-              <MemoizedMoodDetail
-                selectedMood={selectedMood}
-                moodIntensity={moodIntensity}
-                onIntensityChange={setMoodIntensity}
-                selectedStages={selectedStages}
-                onStageToggle={(stage) => {
-                  setSelectedStages((prev) =>
-                    prev.includes(stage)
-                      ? prev.filter((s) => s !== stage)
-                      : [...prev, stage]
-                  );
-                }}
-                onBack={handleBack}
-                onNext={handleNext}
-              />
-            )}
-            {currentStep === 3 && (
-              <MemoizedReason
-                reasonText={reasonText}
-                onReasonChange={setReasonText}
-                selectedMood={selectedMood}
-                onBack={handleBack}
-                onNext={handleNext}
-              />
-            )}
-            {currentStep === 4 && (
-              <MemoizedActivities
-                selectedActivities={selectedActivities}
-                onActivityToggle={(activity) => {
-                  setSelectedActivities((prev) =>
-                    prev.includes(activity)
-                      ? prev.filter((a) => a !== activity)
-                      : prev.length < 5
-                      ? [...prev, activity]
-                      : prev
-                  );
-                }}
-                selectedMood={selectedMood}
-                onNext={handleNext}
-              />
-            )}
-            {currentStep === 5 && (
-              <MemoizedReminders
-                reminderTime={reminderTime}
-                onTimeChange={setReminderTime}
-                selectedDays={selectedDays}
-                onDayToggle={(day) => {
-                  const days = [
-                    "Sun",
-                    "Mon",
-                    "Tue",
-                    "Wed",
-                    "Thu",
-                    "Fri",
-                    "Sat",
-                    "All",
-                  ];
-                  if (day === "All") {
-                    setSelectedDays(
-                      selectedDays.includes("All") ? [] : days.slice(0, -1)
+        <div className="glass-card mx-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+              transition={pageTransition}
+              className="w-full"
+            >
+              {currentStep === 0 && (
+                <MemoizedInstructions onNext={handleNext} />
+              )}
+              {currentStep === 1 && (
+                <MemoizedMoodSelection
+                  selectedMood={selectedMood}
+                  selectedMoods={selectedMoods}
+                  onMoodSelect={(moodId) => {
+                    setSelectedMood(moodId);
+                    setSelectedMoods((prev) =>
+                      prev.includes(moodId)
+                        ? prev.filter((m) => m !== moodId)
+                        : [...prev, moodId]
                     );
-                  } else {
-                    setSelectedDays((prev) => {
-                      const newDays = prev.includes(day)
-                        ? prev.filter((d) => d !== day && d !== "All")
-                        : [...prev.filter((d) => d !== "All"), day];
+                  }}
+                  onNext={handleNext}
+                  onBack={handleBack}
+                  showBack={currentStep > 0}
+                />
+              )}
+              {currentStep === 2 && (
+                <MemoizedMoodDetail
+                  selectedMood={selectedMood}
+                  selectedMoods={selectedMoods}
+                  moodIntensity={moodIntensity}
+                  onIntensityChange={setMoodIntensity}
+                  selectedStages={selectedStages}
+                  onStageToggle={(stage) => {
+                    setSelectedStages((prev) =>
+                      prev.includes(stage)
+                        ? prev.filter((s) => s !== stage)
+                        : [...prev, stage]
+                    );
+                  }}
+                  onBack={handleBack}
+                  onNext={handleNext}
+                />
+              )}
+              {currentStep === 3 && (
+                <MemoizedReason
+                  reasonText={reasonText}
+                  onReasonChange={setReasonText}
+                  selectedMoods={selectedMoods}
+                  onBack={handleBack}
+                  onNext={handleNext}
+                  onSkip={handleNext}
+                />
+              )}
+              {currentStep === 4 && (
+                <MemoizedActivities
+                  selectedActivities={selectedActivities}
+                  onActivityToggle={(activity) => {
+                    setSelectedActivities((prev) =>
+                      prev.includes(activity)
+                        ? prev.filter((a) => a !== activity)
+                        : prev.length < 5
+                        ? [...prev, activity]
+                        : prev
+                    );
+                  }}
+                  selectedMood={selectedMood}
+                  onNext={handleNext}
+                />
+              )}
+              {currentStep === 5 && (
+                <MemoizedReminders
+                  reminderTime={reminderTime}
+                  onTimeChange={setReminderTime}
+                  selectedDays={selectedDays}
+                  onDayToggle={(day) => {
+                    const days = [
+                      "Sun",
+                      "Mon",
+                      "Tue",
+                      "Wed",
+                      "Thu",
+                      "Fri",
+                      "Sat",
+                      "All",
+                    ];
+                    if (day === "All") {
+                      setSelectedDays(
+                        selectedDays.includes("All") ? [] : days.slice(0, -1)
+                      );
+                    } else {
+                      setSelectedDays((prev) => {
+                        const newDays = prev.includes(day)
+                          ? prev.filter((d) => d !== day && d !== "All")
+                          : [...prev.filter((d) => d !== "All"), day];
 
-                      if (newDays.length === 7) {
-                        return [...newDays, "All"];
-                      }
-                      return newDays;
-                    });
-                  }
-                }}
-                onNext={handleNext}
-              />
-            )}
-            {currentStep === 6 && (
-              <MemoizedCalendar
-                onBack={handleBack}
-                onComplete={handleComplete}
-                isSubmitting={isSubmitting}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
+                        if (newDays.length === 7) {
+                          return [...newDays, "All"];
+                        }
+                        return newDays;
+                      });
+                    }
+                  }}
+                  onNext={handleNext}
+                />
+              )}
+              {currentStep === 6 && (
+                <MemoizedCalendar
+                  onBack={handleBack}
+                  onComplete={handleComplete}
+                  isSubmitting={isSubmitting}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
-
       <ProgressIndicator steps={steps} currentStep={currentStep} />
     </div>
   );

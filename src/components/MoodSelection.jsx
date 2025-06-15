@@ -69,10 +69,10 @@ const MoodSelection = ({
           <motion.button
             key={mood.id}
             variants={item}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => onMoodSelect(mood.id)}
-            className={`p-4 sm:p-6 rounded-2xl transition-all duration-200 ${
+            className={`p-4 sm:p-6 rounded-2xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 ${
               selectedMood === mood.id
                 ? `${
                     mood.color
@@ -81,6 +81,9 @@ const MoodSelection = ({
                   }-400`
                 : "bg-white border-2 border-gray-200 hover:border-gray-300"
             }`}
+            aria-pressed={selectedMood === mood.id}
+            aria-label={mood.label}
+            tabIndex={0}
           >
             <motion.div
               className="text-3xl sm:text-4xl lg:text-5xl mb-2"
