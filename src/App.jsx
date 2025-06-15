@@ -1,5 +1,5 @@
 // App.js
-import React, { useState } from "react";
+import React, { useState, useCallback, memo } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import Instructions from "./components/Instructions";
@@ -11,6 +11,16 @@ import Reminders from "./components/Reminders";
 import Calendar from "./components/Calendar";
 import Complete from "./components/Complete";
 import ProgressIndicator from "./components/ProgressIndicator";
+
+// Memoize components to prevent unnecessary re-renders
+const MemoizedInstructions = memo(Instructions);
+const MemoizedMoodSelection = memo(MoodSelection);
+const MemoizedMoodDetail = memo(MoodDetail);
+const MemoizedReason = memo(Reason);
+const MemoizedActivities = memo(Activities);
+const MemoizedReminders = memo(Reminders);
+const MemoizedCalendar = memo(Calendar);
+const MemoizedComplete = memo(Complete);
 
 const MoodCheckinApp = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -40,19 +50,41 @@ const MoodCheckinApp = () => {
     "Calendar",
   ];
 
-  const handleNext = () => {
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      x: 20,
+    },
+    in: {
+      opacity: 1,
+      x: 0,
+    },
+    out: {
+      opacity: 0,
+      x: -20,
+    },
+  };
+
+  const pageTransition = {
+    type: "tween",
+    ease: "anticipate",
+    duration: 0.5,
+  };
+
+  // Memoize handlers to prevent unnecessary re-renders
+  const handleNext = useCallback(() => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
-  };
+  }, [currentStep, steps.length]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
-  };
+  }, [currentStep]);
 
-  const handleComplete = async () => {
+  const handleComplete = useCallback(async () => {
     setIsSubmitting(true);
     setError(null);
 
@@ -83,9 +115,17 @@ const MoodCheckinApp = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [
+    selectedMood,
+    moodIntensity,
+    selectedStages,
+    reasonText,
+    selectedActivities,
+    reminderTime,
+    selectedDays,
+  ]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setCurrentStep(0);
     setIsComplete(false);
     setSelectedMood("");
@@ -97,34 +137,13 @@ const MoodCheckinApp = () => {
     setSelectedDays(["Sat"]);
     setApiResponse(null);
     setError(null);
-  };
-
-  const pageVariants = {
-    initial: {
-      opacity: 0,
-      x: 20,
-    },
-    in: {
-      opacity: 1,
-      x: 0,
-    },
-    out: {
-      opacity: 0,
-      x: -20,
-    },
-  };
-
-  const pageTransition = {
-    type: "tween",
-    ease: "anticipate",
-    duration: 0.5,
-  };
+  }, []);
 
   if (isComplete) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4">
         <div className="w-full max-w-4xl">
-          <Complete
+          <MemoizedComplete
             onReset={handleReset}
             apiResponse={apiResponse}
             error={error}
@@ -145,17 +164,18 @@ const MoodCheckinApp = () => {
             exit="out"
             variants={pageVariants}
             transition={pageTransition}
+            className="w-full"
           >
-            {currentStep === 0 && <Instructions onNext={handleNext} />}
+            {currentStep === 0 && <MemoizedInstructions onNext={handleNext} />}
             {currentStep === 1 && (
-              <MoodSelection
+              <MemoizedMoodSelection
                 selectedMood={selectedMood}
                 onMoodSelect={setSelectedMood}
                 onNext={handleNext}
               />
             )}
             {currentStep === 2 && (
-              <MoodDetail
+              <MemoizedMoodDetail
                 selectedMood={selectedMood}
                 moodIntensity={moodIntensity}
                 onIntensityChange={setMoodIntensity}
@@ -172,7 +192,7 @@ const MoodCheckinApp = () => {
               />
             )}
             {currentStep === 3 && (
-              <Reason
+              <MemoizedReason
                 reasonText={reasonText}
                 onReasonChange={setReasonText}
                 selectedMood={selectedMood}
@@ -181,7 +201,7 @@ const MoodCheckinApp = () => {
               />
             )}
             {currentStep === 4 && (
-              <Activities
+              <MemoizedActivities
                 selectedActivities={selectedActivities}
                 onActivityToggle={(activity) => {
                   setSelectedActivities((prev) =>
@@ -197,7 +217,7 @@ const MoodCheckinApp = () => {
               />
             )}
             {currentStep === 5 && (
-              <Reminders
+              <MemoizedReminders
                 reminderTime={reminderTime}
                 onTimeChange={setReminderTime}
                 selectedDays={selectedDays}
@@ -233,7 +253,7 @@ const MoodCheckinApp = () => {
               />
             )}
             {currentStep === 6 && (
-              <Calendar
+              <MemoizedCalendar
                 onBack={handleBack}
                 onComplete={handleComplete}
                 isSubmitting={isSubmitting}

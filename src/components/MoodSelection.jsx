@@ -32,12 +32,12 @@ const MoodSelection = ({ selectedMood, onMoodSelect, onNext }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="text-center space-y-8"
+      className="text-center space-y-8 px-4 sm:px-6 lg:px-8"
     >
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-3xl font-bold text-gray-800 mb-4"
+        className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4"
       >
         How are you feeling today?
       </motion.h2>
@@ -46,7 +46,7 @@ const MoodSelection = ({ selectedMood, onMoodSelect, onNext }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-gray-600 text-lg mb-8"
+        className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
       >
         No matter how you're feeling, it's okay. We're here to support you.
       </motion.p>
@@ -55,7 +55,7 @@ const MoodSelection = ({ selectedMood, onMoodSelect, onNext }) => {
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-3 gap-6 max-w-lg mx-auto mb-8"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-4xl mx-auto mb-8"
       >
         {moods.map((mood) => (
           <motion.button
@@ -64,20 +64,24 @@ const MoodSelection = ({ selectedMood, onMoodSelect, onNext }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onMoodSelect(mood.id)}
-            className={`p-6 rounded-2xl transition-all duration-200 ${
+            className={`p-4 sm:p-6 rounded-2xl transition-all duration-200 ${
               selectedMood === mood.id
-                ? `${mood.color} text-white shadow-lg`
+                ? `${
+                    mood.color
+                  } text-white shadow-lg ring-2 ring-offset-2 ring-opacity-50 ring-${
+                    mood.color.split("-")[1]
+                  }-400`
                 : "bg-white border-2 border-gray-200 hover:border-gray-300"
             }`}
           >
             <motion.div
-              className="text-4xl mb-2"
+              className="text-3xl sm:text-4xl lg:text-5xl mb-2"
               animate={selectedMood === mood.id ? { scale: [1, 1.2, 1] } : {}}
               transition={{ duration: 0.3 }}
             >
               {mood.emoji}
             </motion.div>
-            <div className="text-sm font-medium">{mood.label}</div>
+            <div className="text-sm sm:text-base font-medium">{mood.label}</div>
           </motion.button>
         ))}
       </motion.div>
@@ -86,7 +90,7 @@ const MoodSelection = ({ selectedMood, onMoodSelect, onNext }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="text-gray-600 mb-8"
+        className="text-sm sm:text-base text-gray-600 mb-8 max-w-xl mx-auto"
       >
         Choose the feeling that is closest to how you are feeling
       </motion.p>
@@ -99,7 +103,7 @@ const MoodSelection = ({ selectedMood, onMoodSelect, onNext }) => {
         whileTap={{ scale: 0.95 }}
         onClick={onNext}
         disabled={!selectedMood}
-        className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-8 py-3 rounded-full font-semibold transition-all duration-200 disabled:transform-none disabled:cursor-not-allowed"
+        className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-200 disabled:transform-none disabled:cursor-not-allowed shadow-md hover:shadow-lg"
       >
         Complete
       </motion.button>
