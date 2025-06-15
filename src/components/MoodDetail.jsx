@@ -1,6 +1,7 @@
 // components/MoodDetail.js
 import React from "react";
 import { motion } from "framer-motion";
+import BackButton from "./BackButton";
 
 const MoodDetail = ({
   selectedMood,
@@ -72,8 +73,9 @@ const MoodDetail = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="text-center space-y-8"
+      className="text-center space-y-8 relative"
     >
+      <BackButton onClick={onBack} />
       <motion.h2
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

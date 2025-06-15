@@ -1,8 +1,15 @@
 // components/MoodSelection.js
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import BackButton from "./BackButton";
 
-const MoodSelection = ({ selectedMood, onMoodSelect, onNext }) => {
+const MoodSelection = ({
+  selectedMood,
+  onMoodSelect,
+  onNext,
+  onBack,
+  showBack,
+}) => {
   const moods = [
     { id: "angry", label: "Angry", emoji: "😠", color: "bg-red-500" },
     { id: "sad", label: "Sad", emoji: "😢", color: "bg-blue-500" },
@@ -32,8 +39,9 @@ const MoodSelection = ({ selectedMood, onMoodSelect, onNext }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="text-center space-y-8 px-4 sm:px-6 lg:px-8"
+      className="text-center space-y-8 px-4 sm:px-6 lg:px-8 relative"
     >
+      {showBack && <BackButton onClick={onBack} />}
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
