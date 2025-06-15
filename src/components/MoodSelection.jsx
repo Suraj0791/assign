@@ -40,13 +40,13 @@ const MoodSelection = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="text-center space-y-8 px-4 sm:px-6 lg:px-8 relative"
+      className="text-center space-y-4 md:space-y-8 px-2 md:px-6 lg:px-8 relative"
     >
       {showBack && <BackButton onClick={onBack} />}
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4"
+        className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2 md:mb-4"
       >
         How are you feeling today?
       </motion.h2>
@@ -55,7 +55,7 @@ const MoodSelection = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
+        className="text-base md:text-lg lg:text-xl text-gray-600 mb-4 md:mb-8 max-w-2xl mx-auto"
       >
         No matter how you're feeling, it's okay. We're here to support you.
       </motion.p>
@@ -64,7 +64,7 @@ const MoodSelection = ({
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-4xl mx-auto mb-8"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 md:gap-4 lg:gap-8 max-w-4xl mx-auto mb-4 md:mb-8"
       >
         {moods.map((mood) => (
           <motion.button
@@ -73,7 +73,7 @@ const MoodSelection = ({
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.96 }}
             onClick={() => onMoodSelect(mood.id)}
-            className={`p-4 sm:p-6 rounded-2xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 ${
+            className={`p-3 md:p-4 lg:p-6 rounded-2xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 ${
               selectedMoods && selectedMoods.includes(mood.id)
                 ? `${
                     mood.color
@@ -87,7 +87,7 @@ const MoodSelection = ({
             tabIndex={0}
           >
             <motion.div
-              className="text-3xl sm:text-4xl lg:text-5xl mb-2"
+              className="text-2xl md:text-3xl lg:text-4xl mb-1 md:mb-2"
               animate={
                 selectedMoods && selectedMoods.includes(mood.id)
                   ? { scale: [1, 1.2, 1] }
@@ -97,7 +97,9 @@ const MoodSelection = ({
             >
               {mood.emoji}
             </motion.div>
-            <div className="text-sm sm:text-base font-medium">{mood.label}</div>
+            <div className="text-xs md:text-sm lg:text-base font-medium">
+              {mood.label}
+            </div>
           </motion.button>
         ))}
       </motion.div>
@@ -106,7 +108,7 @@ const MoodSelection = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="text-sm sm:text-base text-gray-600 mb-8 max-w-xl mx-auto"
+        className="text-xs md:text-sm lg:text-base text-gray-600 mb-4 md:mb-8 max-w-xl mx-auto"
       >
         Choose the feeling that is closest to how you are feeling
       </motion.p>

@@ -73,13 +73,13 @@ const MoodDetail = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="text-center space-y-8 relative"
+      className="text-center space-y-4 md:space-y-8 relative px-2 md:px-0"
     >
       <BackButton onClick={onBack} />
       <motion.h2
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="text-3xl font-bold text-gray-800 mb-2"
+        className="text-2xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2"
       >
         {currentMood.label} is a complex emotion
       </motion.h2>
@@ -88,7 +88,7 @@ const MoodDetail = ({
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="text-gray-600 text-lg mb-8"
+        className="text-gray-600 text-base md:text-lg mb-4 md:mb-8"
       >
         {currentMood.description}
       </motion.p>
@@ -97,10 +97,10 @@ const MoodDetail = ({
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-        className="flex justify-center mb-8"
+        className="flex justify-center mb-4 md:mb-8"
       >
         <div
-          className={`w-24 h-24 ${currentMood.color} rounded-3xl flex items-center justify-center text-4xl shadow-lg`}
+          className={`w-16 h-16 md:w-24 md:h-24 ${currentMood.color} rounded-3xl flex items-center justify-center text-3xl md:text-4xl shadow-lg`}
         >
           {currentMood.emoji}
         </div>
@@ -110,9 +110,9 @@ const MoodDetail = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="max-w-md mx-auto mb-8"
+        className="max-w-md mx-auto mb-4 md:mb-8"
       >
-        <div className="flex justify-between text-sm text-gray-600 mb-2">
+        <div className="flex justify-between text-xs md:text-sm text-gray-600 mb-1 md:mb-2">
           <span>Slightly {currentMood.label}</span>
           <span>Very {currentMood.label}</span>
         </div>
@@ -139,19 +139,19 @@ const MoodDetail = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="mb-8"
+        className="mb-4 md:mb-8"
       >
-        <p className="text-gray-700 font-medium mb-4">
+        <p className="text-gray-700 font-medium mb-2 md:mb-4 text-sm md:text-base">
           What stage is your {currentMood.label.toLowerCase()} in?
         </p>
-        <div className="flex flex-wrap gap-3 justify-center max-w-lg mx-auto">
+        <div className="flex flex-wrap gap-2 md:gap-3 justify-center max-w-lg mx-auto">
           {currentMood.stages.map((stage) => (
             <motion.button
               key={stage}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onStageToggle(stage)}
-              className={`px-4 py-2 rounded-full border-2 transition-all duration-200 ${
+              className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full border-2 transition-all duration-200 text-sm md:text-base ${
                 selectedStages.includes(stage)
                   ? `${currentMood.color} text-white border-transparent`
                   : "bg-white border-gray-300 hover:border-gray-400"
@@ -167,13 +167,13 @@ const MoodDetail = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="flex space-x-4 justify-center"
+        className="flex space-x-2 md:space-x-4 justify-center"
       >
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onBack}
-          className="bg-white border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-full font-semibold transition-all duration-200 hover:bg-purple-50"
+          className="bg-white border-2 border-purple-600 text-purple-600 px-6 py-2 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg transition-all duration-200 hover:bg-purple-50"
         >
           Add Emotion
         </motion.button>
@@ -181,7 +181,7 @@ const MoodDetail = ({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onNext}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-200"
+          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 md:px-8 md:py-3 rounded-full font-semibold text-base md:text-lg transition-all duration-200"
         >
           Continue
         </motion.button>

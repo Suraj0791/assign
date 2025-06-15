@@ -67,12 +67,12 @@ const Activities = ({
       </h2>
       <p className="text-gray-600 text-lg mb-8">Choose upto 5 activities</p>
 
-      <div className="grid grid-cols-3 md:grid-cols-5 gap-4 max-w-4xl mx-auto mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 max-w-4xl mx-auto mb-8 px-2">
         {activities.map((activity) => (
           <button
             key={activity}
             onClick={() => onActivityToggle(activity)}
-            className={`px-4 py-3 rounded-full border-2 transition-all duration-200 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 ${
+            className={`px-3 py-2 md:px-4 md:py-3 rounded-full border-2 transition-all duration-200 text-xs md:text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 ${
               selectedActivities.includes(activity)
                 ? "bg-green-500 text-white border-green-500"
                 : "bg-white border-gray-300 hover:border-gray-400"

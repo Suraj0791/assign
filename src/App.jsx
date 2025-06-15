@@ -159,10 +159,10 @@ const MoodCheckinApp = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4"
+      className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-2 md:p-4"
       style={{ fontFamily: "Montserrat, sans-serif" }}
     >
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-3xl md:max-w-4xl">
         <div className="glass-card mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
