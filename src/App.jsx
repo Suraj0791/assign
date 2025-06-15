@@ -1,46 +1,186 @@
-// components/Instructions.js
-import React from 'react';
+// App.js
+import React, { useState } from 'react';
+import Instructions from './components/Instructions';
+import MoodSelection from './components/MoodSelection';
+import MoodDetail from './components/MoodDetail';
+import Reason from './components/Reason';
+import Activities from './components/Activities';
+import Reminders from './components/Reminders';
+import Calendar from './components/Calendar';
+import Complete from './components/Complete';
+import ProgressIndicator from './components/ProgressIndicator';
 
-const Instructions = ({ onNext }) => {
+const MoodCheckinApp = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedMood, setSelectedMood] = useState('');
+  const [moodIntensity, setMoodIntensity] = useState(50);
+  const [selectedStages, setSelectedStages] = useState([]);
+  const [reasonText, setReasonText] = useState('');
+  const [selectedActivities, setSelectedActivities] = useState([]);
+  const [reminderTime, setReminderTime] = useState({ hour: 3, minute: 0, ampm: 'am' });
+  const [selectedDays, setSelectedDays] = useState(['Sat']);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+
+  const steps = [
+    'Instructions',
+    'Mood Selection',
+    'Mood Detail',
+    'Reason',
+    'Activities',
+    'Reminders',
+    'Calendar'
+  ];
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleComplete = async () => {
+    setIsSubmitting(true);
+    
+    const checkInData = {
+      mood: selectedMood,
+      intensity: moodIntensity,
+      stages: selectedStages,
+      reason: reasonText,
+      activities: selectedActivities,
+      reminder: {
+        time: reminderTime,
+        days: selectedDays
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('Mood check-in submitted:', checkInData);
+      setIsComplete(true);
+    } catch (error) {
+      console.error('Failed to submit mood check-in:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReset = () => {
+    setCurrentStep(0);
+    setIsComplete(false);
+    setSelectedMood('');
+    setSelectedStages([]);
+    setReasonText('');
+    setSelectedActivities([]);
+    setMoodIntensity(50);
+    setReminderTime({ hour: 3, minute: 0, ampm: 'am' });
+    setSelectedDays(['Sat']);
+  };
+
+  if (isComplete) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl">
+          <Complete onReset={handleReset} />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="text-center space-y-8">
-      <div className="flex justify-center items-center space-x-2 mb-4">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-          <span className="text-2xl">📚</span>
-        </div>
-        <div className="flex space-x-1">
-          <span className="text-2xl">😊</span>
-          <span className="text-2xl">😐</span>
-          <span className="text-2xl">😢</span>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl">
+        {currentStep === 0 && <Instructions onNext={handleNext} />}
+        {currentStep === 1 && (
+          <MoodSelection 
+            selectedMood={selectedMood}
+            onMoodSelect={setSelectedMood}
+            onNext={handleNext}
+          />
+        )}
+        {currentStep === 2 && (
+          <MoodDetail 
+            selectedMood={selectedMood}
+            moodIntensity={moodIntensity}
+            onIntensityChange={setMoodIntensity}
+            selectedStages={selectedStages}
+            onStageToggle={(stage) => {
+              setSelectedStages(prev => 
+                prev.includes(stage) 
+                  ? prev.filter(s => s !== stage)
+                  : [...prev, stage]
+              );
+            }}
+            onBack={handleBack}
+            onNext={handleNext}
+          />
+        )}
+        {currentStep === 3 && (
+          <Reason 
+            reasonText={reasonText}
+            onReasonChange={setReasonText}
+            selectedMood={selectedMood}
+            onBack={handleBack}
+            onNext={handleNext}
+          />
+        )}
+        {currentStep === 4 && (
+          <Activities 
+            selectedActivities={selectedActivities}
+            onActivityToggle={(activity) => {
+              setSelectedActivities(prev => 
+                prev.includes(activity)
+                  ? prev.filter(a => a !== activity)
+                  : prev.length < 5 ? [...prev, activity] : prev
+              );
+            }}
+            selectedMood={selectedMood}
+            onNext={handleNext}
+          />
+        )}
+        {currentStep === 5 && (
+          <Reminders 
+            reminderTime={reminderTime}
+            onTimeChange={setReminderTime}
+            selectedDays={selectedDays}
+            onDayToggle={(day) => {
+              const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'All'];
+              if (day === 'All') {
+                setSelectedDays(selectedDays.includes('All') ? [] : days.slice(0, -1));
+              } else {
+                setSelectedDays(prev => {
+                  const newDays = prev.includes(day) 
+                    ? prev.filter(d => d !== day && d !== 'All')
+                    : [...prev.filter(d => d !== 'All'), day];
+                  
+                  if (newDays.length === 7) {
+                    return [...newDays, 'All'];
+                  }
+                  return newDays;
+                });
+              }
+            }}
+            onNext={handleNext}
+          />
+        )}
+        {currentStep === 6 && (
+          <Calendar 
+            onBack={handleBack}
+            onComplete={handleComplete}
+            isSubmitting={isSubmitting}
+          />
+        )}
       </div>
       
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">Instructions</h1>
-      
-      <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto">
-        Welcome to the Stress scale. This is a quiz to identify our stress levels ranging from high to low and navigate through such situations.
-      </p>
-      
-      <div className="space-y-6 text-left max-w-md mx-auto">
-        <div className="flex items-start space-x-3">
-          <span className="text-green-600 text-xl">✓</span>
-          <p className="text-gray-700">Read the statements carefully and relate to each of the statements.</p>
-        </div>
-        
-        <div className="flex items-start space-x-3">
-          <span className="text-blue-600 text-xl">👆</span>
-          <p className="text-gray-700">Choose the option which best describes your mood.</p>
-        </div>
-      </div>
-      
-      <button 
-        onClick={onNext}
-        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-200 transform hover:scale-105 mt-8"
-      >
-        Start Check-in
-      </button>
+      <ProgressIndicator steps={steps} currentStep={currentStep} />
     </div>
   );
 };
 
-export default Instructions;
+export default MoodCheckinApp;
