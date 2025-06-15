@@ -1,35 +1,42 @@
 // App.js
-import React, { useState } from 'react';
-import Instructions from './components/Instructions';
-import MoodSelection from './components/MoodSelection';
-import MoodDetail from './components/MoodDetail';
-import Reason from './components/Reason';
-import Activities from './components/Activities';
-import Reminders from './components/Reminders';
-import Calendar from './components/Calendar';
-import Complete from './components/Complete';
-import ProgressIndicator from './components/ProgressIndicator';
+import React, { useState } from "react";
+import axios from "axios";
+import Instructions from "./components/Instructions";
+import MoodSelection from "./components/MoodSelection";
+import MoodDetail from "./components/MoodDetail";
+import Reason from "./components/Reason";
+import Activities from "./components/Activities";
+import Reminders from "./components/Reminders";
+import Calendar from "./components/Calendar";
+import Complete from "./components/Complete";
+import ProgressIndicator from "./components/ProgressIndicator";
 
 const MoodCheckinApp = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedMood, setSelectedMood] = useState('');
+  const [selectedMood, setSelectedMood] = useState("");
   const [moodIntensity, setMoodIntensity] = useState(50);
   const [selectedStages, setSelectedStages] = useState([]);
-  const [reasonText, setReasonText] = useState('');
+  const [reasonText, setReasonText] = useState("");
   const [selectedActivities, setSelectedActivities] = useState([]);
-  const [reminderTime, setReminderTime] = useState({ hour: 3, minute: 0, ampm: 'am' });
-  const [selectedDays, setSelectedDays] = useState(['Sat']);
+  const [reminderTime, setReminderTime] = useState({
+    hour: 3,
+    minute: 0,
+    ampm: "am",
+  });
+  const [selectedDays, setSelectedDays] = useState(["Sat"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [apiResponse, setApiResponse] = useState(null);
+  const [error, setError] = useState(null);
 
   const steps = [
-    'Instructions',
-    'Mood Selection',
-    'Mood Detail',
-    'Reason',
-    'Activities',
-    'Reminders',
-    'Calendar'
+    "Instructions",
+    "Mood Selection",
+    "Mood Detail",
+    "Reason",
+    "Activities",
+    "Reminders",
+    "Calendar",
   ];
 
   const handleNext = () => {
@@ -46,7 +53,8 @@ const MoodCheckinApp = () => {
 
   const handleComplete = async () => {
     setIsSubmitting(true);
-    
+    setError(null);
+
     const checkInData = {
       mood: selectedMood,
       intensity: moodIntensity,
@@ -55,17 +63,22 @@ const MoodCheckinApp = () => {
       activities: selectedActivities,
       reminder: {
         time: reminderTime,
-        days: selectedDays
+        days: selectedDays,
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log('Mood check-in submitted:', checkInData);
+      const response = await axios.post(
+        "https://jsonplaceholder.typicode.com/posts",
+        checkInData
+      );
+      console.log("Mood check-in submitted successfully:", response.data);
+      setApiResponse(response.data);
       setIsComplete(true);
     } catch (error) {
-      console.error('Failed to submit mood check-in:', error);
+      console.error("Failed to submit mood check-in:", error);
+      setError(error.message || "Failed to submit check-in");
     } finally {
       setIsSubmitting(false);
     }
@@ -74,20 +87,26 @@ const MoodCheckinApp = () => {
   const handleReset = () => {
     setCurrentStep(0);
     setIsComplete(false);
-    setSelectedMood('');
+    setSelectedMood("");
     setSelectedStages([]);
-    setReasonText('');
+    setReasonText("");
     setSelectedActivities([]);
     setMoodIntensity(50);
-    setReminderTime({ hour: 3, minute: 0, ampm: 'am' });
-    setSelectedDays(['Sat']);
+    setReminderTime({ hour: 3, minute: 0, ampm: "am" });
+    setSelectedDays(["Sat"]);
+    setApiResponse(null);
+    setError(null);
   };
 
   if (isComplete) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4">
         <div className="w-full max-w-4xl">
-          <Complete onReset={handleReset} />
+          <Complete
+            onReset={handleReset}
+            apiResponse={apiResponse}
+            error={error}
+          />
         </div>
       </div>
     );
@@ -98,22 +117,22 @@ const MoodCheckinApp = () => {
       <div className="w-full max-w-4xl">
         {currentStep === 0 && <Instructions onNext={handleNext} />}
         {currentStep === 1 && (
-          <MoodSelection 
+          <MoodSelection
             selectedMood={selectedMood}
             onMoodSelect={setSelectedMood}
             onNext={handleNext}
           />
         )}
         {currentStep === 2 && (
-          <MoodDetail 
+          <MoodDetail
             selectedMood={selectedMood}
             moodIntensity={moodIntensity}
             onIntensityChange={setMoodIntensity}
             selectedStages={selectedStages}
             onStageToggle={(stage) => {
-              setSelectedStages(prev => 
-                prev.includes(stage) 
-                  ? prev.filter(s => s !== stage)
+              setSelectedStages((prev) =>
+                prev.includes(stage)
+                  ? prev.filter((s) => s !== stage)
                   : [...prev, stage]
               );
             }}
@@ -122,7 +141,7 @@ const MoodCheckinApp = () => {
           />
         )}
         {currentStep === 3 && (
-          <Reason 
+          <Reason
             reasonText={reasonText}
             onReasonChange={setReasonText}
             selectedMood={selectedMood}
@@ -131,13 +150,15 @@ const MoodCheckinApp = () => {
           />
         )}
         {currentStep === 4 && (
-          <Activities 
+          <Activities
             selectedActivities={selectedActivities}
             onActivityToggle={(activity) => {
-              setSelectedActivities(prev => 
+              setSelectedActivities((prev) =>
                 prev.includes(activity)
-                  ? prev.filter(a => a !== activity)
-                  : prev.length < 5 ? [...prev, activity] : prev
+                  ? prev.filter((a) => a !== activity)
+                  : prev.length < 5
+                  ? [...prev, activity]
+                  : prev
               );
             }}
             selectedMood={selectedMood}
@@ -145,22 +166,33 @@ const MoodCheckinApp = () => {
           />
         )}
         {currentStep === 5 && (
-          <Reminders 
+          <Reminders
             reminderTime={reminderTime}
             onTimeChange={setReminderTime}
             selectedDays={selectedDays}
             onDayToggle={(day) => {
-              const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'All'];
-              if (day === 'All') {
-                setSelectedDays(selectedDays.includes('All') ? [] : days.slice(0, -1));
+              const days = [
+                "Sun",
+                "Mon",
+                "Tue",
+                "Wed",
+                "Thu",
+                "Fri",
+                "Sat",
+                "All",
+              ];
+              if (day === "All") {
+                setSelectedDays(
+                  selectedDays.includes("All") ? [] : days.slice(0, -1)
+                );
               } else {
-                setSelectedDays(prev => {
-                  const newDays = prev.includes(day) 
-                    ? prev.filter(d => d !== day && d !== 'All')
-                    : [...prev.filter(d => d !== 'All'), day];
-                  
+                setSelectedDays((prev) => {
+                  const newDays = prev.includes(day)
+                    ? prev.filter((d) => d !== day && d !== "All")
+                    : [...prev.filter((d) => d !== "All"), day];
+
                   if (newDays.length === 7) {
-                    return [...newDays, 'All'];
+                    return [...newDays, "All"];
                   }
                   return newDays;
                 });
@@ -170,14 +202,14 @@ const MoodCheckinApp = () => {
           />
         )}
         {currentStep === 6 && (
-          <Calendar 
+          <Calendar
             onBack={handleBack}
             onComplete={handleComplete}
             isSubmitting={isSubmitting}
           />
         )}
       </div>
-      
+
       <ProgressIndicator steps={steps} currentStep={currentStep} />
     </div>
   );
