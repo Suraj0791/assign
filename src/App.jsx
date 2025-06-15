@@ -1,6 +1,7 @@
 // App.js
 import React, { useState } from "react";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 import Instructions from "./components/Instructions";
 import MoodSelection from "./components/MoodSelection";
 import MoodDetail from "./components/MoodDetail";
@@ -98,6 +99,27 @@ const MoodCheckinApp = () => {
     setError(null);
   };
 
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      x: 20,
+    },
+    in: {
+      opacity: 1,
+      x: 0,
+    },
+    out: {
+      opacity: 0,
+      x: -20,
+    },
+  };
+
+  const pageTransition = {
+    type: "tween",
+    ease: "anticipate",
+    duration: 0.5,
+  };
+
   if (isComplete) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4">
@@ -115,99 +137,110 @@ const MoodCheckinApp = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-200 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl">
-        {currentStep === 0 && <Instructions onNext={handleNext} />}
-        {currentStep === 1 && (
-          <MoodSelection
-            selectedMood={selectedMood}
-            onMoodSelect={setSelectedMood}
-            onNext={handleNext}
-          />
-        )}
-        {currentStep === 2 && (
-          <MoodDetail
-            selectedMood={selectedMood}
-            moodIntensity={moodIntensity}
-            onIntensityChange={setMoodIntensity}
-            selectedStages={selectedStages}
-            onStageToggle={(stage) => {
-              setSelectedStages((prev) =>
-                prev.includes(stage)
-                  ? prev.filter((s) => s !== stage)
-                  : [...prev, stage]
-              );
-            }}
-            onBack={handleBack}
-            onNext={handleNext}
-          />
-        )}
-        {currentStep === 3 && (
-          <Reason
-            reasonText={reasonText}
-            onReasonChange={setReasonText}
-            selectedMood={selectedMood}
-            onBack={handleBack}
-            onNext={handleNext}
-          />
-        )}
-        {currentStep === 4 && (
-          <Activities
-            selectedActivities={selectedActivities}
-            onActivityToggle={(activity) => {
-              setSelectedActivities((prev) =>
-                prev.includes(activity)
-                  ? prev.filter((a) => a !== activity)
-                  : prev.length < 5
-                  ? [...prev, activity]
-                  : prev
-              );
-            }}
-            selectedMood={selectedMood}
-            onNext={handleNext}
-          />
-        )}
-        {currentStep === 5 && (
-          <Reminders
-            reminderTime={reminderTime}
-            onTimeChange={setReminderTime}
-            selectedDays={selectedDays}
-            onDayToggle={(day) => {
-              const days = [
-                "Sun",
-                "Mon",
-                "Tue",
-                "Wed",
-                "Thu",
-                "Fri",
-                "Sat",
-                "All",
-              ];
-              if (day === "All") {
-                setSelectedDays(
-                  selectedDays.includes("All") ? [] : days.slice(0, -1)
-                );
-              } else {
-                setSelectedDays((prev) => {
-                  const newDays = prev.includes(day)
-                    ? prev.filter((d) => d !== day && d !== "All")
-                    : [...prev.filter((d) => d !== "All"), day];
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial="initial"
+            animate="in"
+            exit="out"
+            variants={pageVariants}
+            transition={pageTransition}
+          >
+            {currentStep === 0 && <Instructions onNext={handleNext} />}
+            {currentStep === 1 && (
+              <MoodSelection
+                selectedMood={selectedMood}
+                onMoodSelect={setSelectedMood}
+                onNext={handleNext}
+              />
+            )}
+            {currentStep === 2 && (
+              <MoodDetail
+                selectedMood={selectedMood}
+                moodIntensity={moodIntensity}
+                onIntensityChange={setMoodIntensity}
+                selectedStages={selectedStages}
+                onStageToggle={(stage) => {
+                  setSelectedStages((prev) =>
+                    prev.includes(stage)
+                      ? prev.filter((s) => s !== stage)
+                      : [...prev, stage]
+                  );
+                }}
+                onBack={handleBack}
+                onNext={handleNext}
+              />
+            )}
+            {currentStep === 3 && (
+              <Reason
+                reasonText={reasonText}
+                onReasonChange={setReasonText}
+                selectedMood={selectedMood}
+                onBack={handleBack}
+                onNext={handleNext}
+              />
+            )}
+            {currentStep === 4 && (
+              <Activities
+                selectedActivities={selectedActivities}
+                onActivityToggle={(activity) => {
+                  setSelectedActivities((prev) =>
+                    prev.includes(activity)
+                      ? prev.filter((a) => a !== activity)
+                      : prev.length < 5
+                      ? [...prev, activity]
+                      : prev
+                  );
+                }}
+                selectedMood={selectedMood}
+                onNext={handleNext}
+              />
+            )}
+            {currentStep === 5 && (
+              <Reminders
+                reminderTime={reminderTime}
+                onTimeChange={setReminderTime}
+                selectedDays={selectedDays}
+                onDayToggle={(day) => {
+                  const days = [
+                    "Sun",
+                    "Mon",
+                    "Tue",
+                    "Wed",
+                    "Thu",
+                    "Fri",
+                    "Sat",
+                    "All",
+                  ];
+                  if (day === "All") {
+                    setSelectedDays(
+                      selectedDays.includes("All") ? [] : days.slice(0, -1)
+                    );
+                  } else {
+                    setSelectedDays((prev) => {
+                      const newDays = prev.includes(day)
+                        ? prev.filter((d) => d !== day && d !== "All")
+                        : [...prev.filter((d) => d !== "All"), day];
 
-                  if (newDays.length === 7) {
-                    return [...newDays, "All"];
+                      if (newDays.length === 7) {
+                        return [...newDays, "All"];
+                      }
+                      return newDays;
+                    });
                   }
-                  return newDays;
-                });
-              }
-            }}
-            onNext={handleNext}
-          />
-        )}
-        {currentStep === 6 && (
-          <Calendar
-            onBack={handleBack}
-            onComplete={handleComplete}
-            isSubmitting={isSubmitting}
-          />
-        )}
+                }}
+                onNext={handleNext}
+              />
+            )}
+            {currentStep === 6 && (
+              <Calendar
+                onBack={handleBack}
+                onComplete={handleComplete}
+                isSubmitting={isSubmitting}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <ProgressIndicator steps={steps} currentStep={currentStep} />
